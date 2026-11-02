@@ -121,6 +121,4 @@ Before dashboard deployment, the data warehouse was validated via rigorous BigQu
 **Hasna Ait Boui**  
 *Data & Operations Analyst*  
 [LinkedIn Profile](https://www.linkedin.com/in/hasna-ait-boui-742a89266)
-## 🏗️ Architecture & Data Modeling
 
-The data architecture transitions raw operational tables into a dimensional star schema within Google BigQuery:
