@@ -27,23 +27,52 @@ A reconciliation audit of the analytical reporting view (`vw_sales_reporting`) g
 | **Average Order Value (AOV)**| **$2,860.38** | Mean sales spend per customer transaction |
 
 ---
-┌──────────────────────┐
-              │      dim_stores      │
-              ├──────────────────────┤
-              │ PK: StoreID          │
-              │     StoreName        │
-              │     City, Region     │
-              └──────────┬───────────┘
-                         │
-                         │ 1:N
-┌──────────────────────┐     │      ┌──────────────────────┐
-│     dim_customer     │     ▼      │     dim_products     │
-├──────────────────────┤  ┌─────┐   ├──────────────────────┤
-│ PK: CustomerID       ├──► Fact ◄──┤ PK: ProductID        │
-│     CustomerAge      │  └─────┘   │     ProductName      │
-│     AgeGroup         │  fact_transactions               │ Category, SubCategory│
-│     TenureMonths     │            │     UnitPrice, Cost  │
-└──────────────────────┘            └──────────────────────┘
+## 🏗️ Architecture & Data Modeling
+
+The data warehouse implements a star schema optimized for retail analytical queries:
+
+```mermaid
+erDiagram
+    dim_stores ||--o{ fact_transactions : "places (1:N)"
+    dim_customer ||--o{ fact_transactions : "purchases (1:N)"
+    dim_products ||--o{ fact_transactions : "contains (1:N)"
+
+    dim_stores {
+        string StoreID PK
+        string StoreName
+        string City
+        string Region
+    }
+
+    dim_customer {
+        string CustomerID PK
+        int CustomerAge
+        string AgeGroup
+        int CustomerTenureMonths
+    }
+
+    dim_products {
+        string ProductID PK
+        string ProductName
+        string Category
+        string SubCategory
+        float UnitPrice
+        float CostPrice
+    }
+
+    fact_transactions {
+        string TransactionID PK
+        string CustomerID FK
+        string ProductID FK
+        string StoreID FK
+        date TransactionDate
+        int Quantity
+        float Discount
+        float TotalRevenue
+        float TotalCost
+        float TotalProfit
+    }
+```
 
 ### 1. Dimension Tables
 - **`dim_stores`**: Cleans raw headers and maps retail locations across East, North, South, and West regions.
